@@ -90,7 +90,8 @@ contract MysticDex is IDEX {
 
         s_liquidity0 += optAmount0;
         s_liquidity1 += optAmount1;
-        
+
+        s_totalShares += poolShares;
         s_userLiquidityShares[msg.sender] += poolShares;
     }
 
