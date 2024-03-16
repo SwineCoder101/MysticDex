@@ -1,10 +1,11 @@
 "use client";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { IDKitWidget, VerificationLevel, ISuccessResult } from "@worldcoin/idkit";
 
-const { address } = useAddress()
+// const { address } = useAddress()
 
 const handleVerify = async (proof) => {
+  console.log("Proof received from IDKit:\n", JSON.stringify(proof))
   const res = await fetch("/api/verify", {
       method: "POST",
       headers: {
@@ -22,6 +23,7 @@ const onSuccess = () => {
 };
 
 export default function Home() {
+  // const [proof, setProof] = useState()
   return (
     <div
       className="h-screen bg-[#0f181f]"
@@ -51,7 +53,7 @@ export default function Home() {
           Input Token:
         </p>
         <div className="flex flex-row space-x-2">
-          <Input></Input>
+          {/* <Input></Input> */}
           <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
             <option value="ETH">ETH</option>
             <option value="USDC">USDC</option>
@@ -65,7 +67,7 @@ export default function Home() {
           Output Token:
         </p>
         <div className="flex flex-row space-x-2">
-          <Input></Input>
+          {/* <Input></Input> */}
           <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
             <option value="BTC">BTC</option>
             <option value="USDC">USDC</option>
