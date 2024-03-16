@@ -10,7 +10,17 @@ import { WalletOptions } from '../utils/wallet-options';
 import { useAccount, useWriteContract } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
 import { motion } from 'framer-motion';
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../components/ui/dialog";
+import { Button } from "../components/ui/button";
+import { Label } from "../components/ui/label";
 // From IDEX contract
 // function swap(bool zeroForOne, uint256 amountIn) external returns (uint256 amountOut);
 // function addLiquidity(uint256 maxAmount0, uint256 maxAmount1) external returns(uint256 poolShares);
@@ -39,7 +49,8 @@ export default function Home() {
   const { address } = useAccount();
   const [proof, setProof] = useState(null);
   const { writeContract } = useWriteContract()
-  const [verified, setVerified] = useState(true);
+  const [verified, setVerified] = useState(false);
+  const [displayModal, setDisplayModal] = useState(true);
 
   const onSuccess = () => {
     setVerified(true);
@@ -145,7 +156,7 @@ export default function Home() {
     disabled={!verified}
   />
   <select
-    className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
+    className={`focus:outline-none border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
     disabled={!verified}
   >
     <option value="ETH">ETH</option>
@@ -162,13 +173,13 @@ export default function Home() {
         </p>
         <div className="flex flex-row space-x-2 relative">
         <input
-          className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 tracking-tight font-medium appearance-none w-full focus:outline-none ${verified ? 'hover:bg-[#1e2831]' : ''}`}
-          placeholder="Your value here"
+          className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 tracking-tight font-medium appearance-none w-full focus:outline-none ${verified ? '' : ''}`}
+          placeholder="Output value"
           type="number"
-          disabled={!verified}
+          disabled={true}
         />
           <select
-            className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
+            className={`focus:outline-none border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
             disabled={!verified}
           >
             <option value="BTC">BTC</option>
@@ -179,7 +190,7 @@ export default function Home() {
       </div>
       <div className="container text-white text-center pt-12 w-[500px]">
         
-       {address != null && verified === true && (<p>Slippage: </p>) }
+       {address != null && verified === true && (<p className="text-sm">Slippage: <i>Please input a token value.</i></p>) }
        {address != null ? verified === true ?
         (<motion.button
           whileHover={{ scale: 1.05 }}
