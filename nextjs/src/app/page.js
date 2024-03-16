@@ -2,9 +2,10 @@
 import { Input } from "@/components/ui/input";
 import { IDKitWidget, VerificationLevel, ISuccessResult } from "@worldcoin/idkit";
 
-const { address } = useAddress()
+// const { address } = useAddress()
 
 const handleVerify = async (proof) => {
+  console.log("Proof received from IDKit:\n", JSON.stringify(proof))
   const res = await fetch("/api/verify", {
       method: "POST",
       headers: {
@@ -22,6 +23,7 @@ const onSuccess = () => {
 };
 
 export default function Home() {
+  // const [proof, setProof] = useState()
   return (
     <div
       className="h-screen bg-[#0f181f]"
@@ -38,8 +40,8 @@ export default function Home() {
       <div className="container text-white text-center pt-20 w-[500px]">
         <div className="flex">
           <IDKitWidget
-            app_id="app_staging_7b0776cc7b74fd86dc87adac4792a7d6"
-            action="swap"
+            app_id="app_staging_86db89ba718bfb4426194c6e88254a62"
+            action="test"
             verification_level={VerificationLevel.Orb}
             handleVerify={handleVerify}
             onSuccess={onSuccess}

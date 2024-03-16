@@ -1,5 +1,7 @@
 export default async function handler(req, res) {
-const verifyRes = await fetch(`https://developer.worldcoin.org/api/v1/verify/app_staging_7b0776cc7b74fd86dc87adac4792a7d6`, {
+const proof = req.body;
+console.log(proof)
+const verifyRes = await fetch(`https://developer.worldcoin.org/api/v1/verify/app_staging_86db89ba718bfb4426194c6e88254a62`, {
     method: "POST",
     headers: {
         "Content-Type": "application/json",
@@ -14,7 +16,10 @@ if (verifyRes.ok) {
     });
 } else {
     res
-    .status(verifyRes.status)
-    .send({ code: wldResponse.code, detail: wldResponse.detail });
+    .status(verifyRes.status).send({
+        code: "unsuccessful",
+        detail: "This action verified incorrectly.",
+    });
+
 }
 }
