@@ -124,8 +124,31 @@ contract MysticDEX is IEncryptedDEX {
     }
 
     function withdrawLiquidity(
-        inEuint32 calldata poolShares
-    ) external override returns (euint32 amount0, euint32 amount1) {}
+        inEuint32 calldata poolSharesIn
+    ) external override returns (euint32 amount0, euint32 amount1) {
+        //ignore for now
+        // if(s_userLiquidityShares[msg.sender] < poolShares) {
+        //     revert MysticDex__InsufficientLiquidity();
+        // }
+        euint32 poolShares = FHE.asEuint32(poolSharesIn);
+
+        amount0 = (poolShares * s_liquidity0) / s_totalShares;
+        amount1 = (poolShares * s_liquidity1) / s_totalShares;
+        
+        //ignore for now!!
+        // if(amount0 == 0 || amount1 == 0) {
+        //     revert MysticDex__InsufficientSharePosition();
+        // }
+
+        s_userLiquidityShares[msg.sender] = s_userLiquidityShares[msg.sender] - poolShares;
+        s_totalShares = s_totalShares - poolShares;
+
+        s_liquidity0 = s_liquidity0 - amount0;
+        s_liquidity1 = s_liquidity1 - amount1;
+
+        i_token0.transferEncrypted(msg.sender, amount0);
+        i_token1.transferEncrypted(msg.sender, amount1);
+    }
 
     function settleLiquidity(
         bool zeroForOne,
