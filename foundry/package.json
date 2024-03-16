@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "@fhenixprotocol/contracts": "^0.1.1",
+    "@hyperlane-xyz/core": "^3.8.0",
+    "@hyperlane-xyz/utils": "^3.8.1",
+    "@openzeppelin/contracts-upgradeable": "^v4.9.3",
+    "@openzeppelin/contracts": "^4.9.3",
     "dotenv": "^16.4.5",
     "ethers": "^5.7.2",
     "fhenixjs": "^0.1.1"

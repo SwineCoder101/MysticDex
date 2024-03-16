@@ -1,0 +1,29 @@
+anvil:
+  name: anvil
+  chainId: 31337
+  domainId: 31337
+  protocol: ethereum
+  rpcUrls:
+    - http: http://127.0.0.1:8545
+fhenix:
+  name: fhenix
+  chainId: 42069
+  domainId: 42069
+  protocol: ethereum
+  rpcUrls:
+    - http: https://api.testnet.fhenix.zone:7747
+  nativeToken:
+    name: TestFhenixEther
+    symbol: TFHE
+    decimals: 18    
+basesepolia:
+  name: basesepolia
+  chainId: 84532
+  domainId: 84532
+  protocol: ethereum
+  rpcUrls:
+    - http: https://rpc.notadegen.com/base/sepolia
+  nativeToken:
+    name: Ether
+    symbol: ETH
+    decimals: 18
