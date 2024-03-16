@@ -6,3 +6,7 @@ libs = ["lib"]
 remappings = ["@openzeppelin/contracts=node_modules/@openzeppelin/contracts","@openzeppelin/contracts/latest=lib/openzeppelin-contracts/contracts", "@fhenixprotocol/contracts=node_modules/@fhenixprotocol/contracts", "@hyperlane-xyz/contracts=node_modules/@hyperlane-xyz/core/contracts", "@openzeppelin/contracts-upgradeable=node_modules/@openzeppelin/contracts-upgradeable"]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+
+[etherscan]
+baseSepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
+base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }
