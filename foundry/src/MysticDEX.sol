@@ -37,61 +37,44 @@ contract MysticDEX is IEncryptedDEX {
         THREE = FHE.asEuint32(3);
     }
 
-    //zeroForOne doesn't need to be encrypted,
-    //will be obvious based on token contract calls which methods were called
-    //therefore will be simple to deteremine trade direction regardless
     function swap(
-        bool zeroForOne, 
-        inEuint32 calldata amountIn,
+        ebool zeroForOne, 
+        euint32 sellAmount,
         bytes32 userPublicKey
     ) external override returns (euint32) {
 
-        euint32 sellAmount = FHE.asEuint32(amountIn);
+        euint32 token0Amount = FHE.select(zeroForOne, sellAmount, ZERO); //bad practice to use 'ZERO' in multiple places without re-encrypting?
+        euint32 token1Amount = FHE.select(zeroForOne, ZERO, sellAmount);
+        euint32 sellReserve = FHE.select(zeroForOne, s_liquidity0, s_liquidity1);
+        euint32 buyReserve = FHE.select(zeroForOne, s_liquidity1, s_liquidity0);
 
-        //ignore for now! ...
-        // if (sellAmount.eq(0)) {
-        //     revert MysticDex__AmountCannotBeZero();
-        // }
-
-        (
-            IFHERC20 sellToken,
-            IFHERC20 buyToken,
-            euint32 sellReserve,
-            euint32 buyReserve
-        ) = zeroForOne
-                ? (i_token0, i_token1, s_liquidity0, s_liquidity1)
-                : (i_token1, i_token0, s_liquidity1, s_liquidity0);
-
-        sellToken.transferFromEncrypted(
+        i_token0.transferFromEncrypted(
             msg.sender,
             address(this),
-            sellAmount
+            token0Amount
+        );
+
+        i_token1.transferFromEncrypted(
+            msg.sender,
+            address(this),
+            token1Amount
         );
 
         euint32 amountOut = (buyReserve * sellAmount) / (sellReserve + sellAmount);
 
-        //settle balances before transfer tokens (re-entrancy)
-        //TODO : add re-entrancy lock
         settleLiquidity(zeroForOne, sellAmount, amountOut);
 
-        buyToken.transferEncrypted(msg.sender, amountOut);
+        i_token0.transferEncrypted(msg.sender, token1Amount);
+        i_token1.transferEncrypted(msg.sender, token0Amount);
 
         //re encrypt return value with user pub key, so only user can decrypt with their private key
         return FHE.asEuint32(FHE.sealoutput(amountOut, userPublicKey));
     }
 
     function addLiquidity(
-        inEuint32 calldata maxInAmount0,
-        inEuint32 calldata maxInAmount1
+        euint32 maxAmount0,
+        euint32 maxAmount1
     ) external override returns (euint32 poolShares) {
-
-        euint32 maxAmount0 = FHE.asEuint32(maxInAmount0);
-        euint32 maxAmount1 = FHE.asEuint32(maxInAmount1);
-
-        //ignore for now
-        // if (maxAmount0 == 0 || maxAmount1 == 0) {
-        //     revert MysticDex__AmountCannotBeZero();
-        // }
 
         euint32 optAmount0;
         euint32 optAmount1;
@@ -124,21 +107,11 @@ contract MysticDEX is IEncryptedDEX {
     }
 
     function withdrawLiquidity(
-        inEuint32 calldata poolSharesIn
+        euint32 poolShares
     ) external override returns (euint32 amount0, euint32 amount1) {
-        //ignore for now
-        // if(s_userLiquidityShares[msg.sender] < poolShares) {
-        //     revert MysticDex__InsufficientLiquidity();
-        // }
-        euint32 poolShares = FHE.asEuint32(poolSharesIn);
 
         amount0 = (poolShares * s_liquidity0) / s_totalShares;
         amount1 = (poolShares * s_liquidity1) / s_totalShares;
-        
-        //ignore for now!!
-        // if(amount0 == 0 || amount1 == 0) {
-        //     revert MysticDex__InsufficientSharePosition();
-        // }
 
         s_userLiquidityShares[msg.sender] = s_userLiquidityShares[msg.sender] - poolShares;
         s_totalShares = s_totalShares - poolShares;
@@ -151,17 +124,12 @@ contract MysticDEX is IEncryptedDEX {
     }
 
     function settleLiquidity(
-        bool zeroForOne,
+        ebool zeroForOne,
         euint32 sellAmount,
         euint32 buyAmount
     ) private {
-        if (zeroForOne) {
-            s_liquidity0 = s_liquidity0 + sellAmount;
-            s_liquidity1 = s_liquidity1 - buyAmount;
-        } else {
-            s_liquidity0 = s_liquidity0 - buyAmount;
-            s_liquidity1 = s_liquidity1 + sellAmount;
-        }
+        s_liquidity0 = FHE.select(zeroForOne, s_liquidity0 + sellAmount, s_liquidity0 - buyAmount);
+        s_liquidity1 = FHE.select(zeroForOne, s_liquidity1 - buyAmount, s_liquidity1 + sellAmount);
     }
 
     function calculateCPLiquidityReq(
@@ -191,11 +159,6 @@ contract MysticDEX is IEncryptedDEX {
         euint32 shares0 = (optAmount0 * s_totalShares) / s_liquidity0;
         euint32 shares1 = (optAmount1 * s_totalShares) / s_liquidity1;
 
-        //ignore for now
-        // if (shares0 == 0 && shares1 == 0) {
-        //     revert MysticDex__InsufficientLiquidity();
-        // }
-
         ebool shares0ltShares1 = FHE.lt(shares0, shares1);
 
         poolShares = FHE.select(shares0ltShares1, shares0, shares1);
@@ -213,7 +176,7 @@ contract MysticDEX is IEncryptedDEX {
     function _calculateSqrt(euint32 y) private view returns(euint32 z) {
         z = y;
         euint32 x = y / TWO + ONE;
-        while (FHE.decrypt(FHE.lt(x,z))) {  //TODO , refactor to avoid decryption
+        while (FHE.decrypt(FHE.lt(x,z))) {  // only called on first add liquidity, does not reveal sensitive info
             z = x;
             x = (y / x + x) / TWO;
         }
