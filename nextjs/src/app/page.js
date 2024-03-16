@@ -9,21 +9,41 @@ import { Account } from '../utils/account';
 import { WalletOptions } from '../utils/wallet-options';
 import { useAccount, useWriteContract } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
+import { motion } from 'framer-motion';
 
 // From IDEX contract
 // function swap(bool zeroForOne, uint256 amountIn) external returns (uint256 amountOut);
 // function addLiquidity(uint256 maxAmount0, uint256 maxAmount1) external returns(uint256 poolShares);
 // function withdrawLiquidity(uint256 poolShares) external returns(uint256 amount0, uint256 amount1);
 
+//deployed addresses
+//
+// Token0     - 0x210dD4B75a71f2b8F565ce814877A7749BEaA38av
+// Token1     - 0x1002A26f4404fa1BDAC9c6AdE24D4B053d960390
+// Mystic DEX - 0xD0559eDB1b35661c207C52AA572d78eEc7677f96
 
-const onSuccess = () => {
-    window.location.href = "/success";
+const bounceAnimation = {
+  y: ["0%", "-10%", "0%",  "-10%", "0%"], // Bounce movement pattern
+  transition: {
+    y: {
+      duration: 0.6, // Duration of one bounce cycle
+      ease: "easeOut", // Easing function for the bounce
+      repeat: 2, // Repeat the animation indefinitely
+      repeatType: "reverse", // Reverse the animation on each iteration for a bounce effect
+      repeatDelay: 2, // 2-second pause between each bounce cycle
+    }
+  }
 };
 
 export default function Home() {
   const { address } = useAccount();
   const [proof, setProof] = useState(null);
   const { writeContract } = useWriteContract()
+  const [verified, setVerified] = useState(true);
+
+  const onSuccess = () => {
+    setVerified(true);
+  };
 
   function write() {
     writeContract({ 
@@ -58,18 +78,32 @@ export default function Home() {
       className="h-screen bg-[#0f181f]"
       style={{ fontFamily: "var(--font-roboto-mono), monospace" }}
     >
-      <div className="hidden md:flex border-b border-[#232d3c]">
+      {address ? (
+				proof ? (<></>) : ( <div className="hidden md:flex border-b border-[#232d3c]">
+        <div className="container text-white flex flex-row items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
+          <div className="flex flex-row space-x-2">
+            <h2 className="text-3xl text-gray-200 tracking-wide">mysticDEX</h2>
+            
+          </div>
+          <div>
+          <ConnectKitButton />
+          </div>
+        </div>
+      </div>) ):  <div className="hidden md:flex border-b border-[#232d3c]">
         <div className="container text-white flex flex-row items-start justify-center space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
           <div className="flex flex-row space-x-2">
             <h2 className="text-3xl text-gray-200 tracking-wide">mysticDEX</h2>
+            
           </div>
         </div>
-      </div>
+      </div>}
+  
 
       <div className="container text-white text-center pt-20 w-[500px]">
         <div className="flex">
-        <ConnectKitButton />
-        {address ? (
+        {verified === true ? <button 
+            disabled className="mx-auto mb-10 border border-[#1c2836] bg-[#0c1c28] p-2 tracking-tight font-medium">you are verified with world id</button> : (
+        address ? (
 				proof ? (
 					<button onClick={write}>submit tx</button>
 				) : (
@@ -79,25 +113,40 @@ export default function Home() {
             signal={address}            
             onSuccess={onSuccess}
 					>
-						{({ open }) => <button onClick={open} 
-            className="mx-auto mb-10 hover:bg-[#1e2831] border border-[#1c2836] bg-[#0c1c28] p-2 tracking-tight font-medium">verify with world id</button>}
+						{({ open }) => <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={open}
+              animate={bounceAnimation}
+              className="mx-auto mb-10 bg-[#77f6b5] tracking-tight text-[#0c1c28] font-medium text-lg py-2 px-14"
+            >
+              verify with world id
+            </motion.button>}
 					</IDKitWidget>
 				)
 			) : (
-				<ConnectKitButton />
-			)}
+        <div className="flex mx-auto mb-6">
+				   <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              animation={bounceAnimation}><ConnectKitButton /></motion.div>
+        </div>
+			) )
+    }
         </div>
         <p className="mb-2" style={{ fontFamily: "var(--font-roboto-mono), monospace" }}>
           Input Token:
         </p>
         <div className="flex flex-row space-x-2 relative">
   <input
-    className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 hover:bg-[#1e2831] tracking-tight font-medium appearance-none w-full focus:outline-none"
+    className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 tracking-tight font-medium appearance-none w-full focus:outline-none ${verified ? 'hover:bg-[#1e2831]' : ''}`}
     placeholder="Your value here"
     type="number"
+    disabled={!verified}
   />
   <select
-    className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 hover:bg-[#1e2831] tracking-tight font-medium absolute right-0 top-0 h-full"
+    className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
+    disabled={!verified}
   >
     <option value="ETH">ETH</option>
     <option value="USDC">USDC</option>
@@ -113,13 +162,15 @@ export default function Home() {
         </p>
         <div className="flex flex-row space-x-2 relative">
         <input
-          className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 hover:bg-[#1e2831] tracking-tight font-medium appearance-none w-full focus:outline-none"
+          className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-6 tracking-tight font-medium appearance-none w-full focus:outline-none ${verified ? 'hover:bg-[#1e2831]' : ''}`}
           placeholder="Your value here"
           type="number"
+          disabled={!verified}
         />
-        <select
-          className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 hover:bg-[#1e2831] tracking-tight font-medium absolute right-0 top-0 h-full"
-        >
+          <select
+            className={`border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
+            disabled={!verified}
+          >
             <option value="BTC">BTC</option>
             <option value="USDC">USDC</option>
             <option value="ACHI">ACHI</option>
@@ -127,11 +178,20 @@ export default function Home() {
         </div>
       </div>
       <div className="container text-white text-center pt-12 w-[500px]">
-        <p>Slippage: </p>
-       {address != null && <p>Address: {address}</p>}
-        <button className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-14 mt-8 hover:bg-[#1e2831] tracking-tight font-medium">
+        
+       {address != null && verified === true && (<p>Slippage: </p>) }
+       {address != null ? verified === true ?
+        (<motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="border text-md border-[#1c2836] text-[21px] bg-[#77f6b5] text-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium">
           SWAP
-        </button>
+        </motion.button>) : (<button disabled className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium">
+          Please verify with world id to swap.
+        </button>)
+        : (<button disabled className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium">
+        Please connect wallet to start.
+      </button>) }
       </div>
     </div>
   );
