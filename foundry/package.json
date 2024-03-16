@@ -1,5 +1,8 @@
 {
   "dependencies": {
-    "@fhenixprotocol/contracts": "^0.1.1"
+    "@fhenixprotocol/contracts": "^0.1.1",
+    "dotenv": "^16.4.5",
+    "ethers": "^5.7.2",
+    "fhenixjs": "^0.1.1"
   }
 }
