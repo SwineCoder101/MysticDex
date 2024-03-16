@@ -3,6 +3,6 @@ src = "src"
 out = "out"
 libs = ["lib"]
 
-remappings = ["@openzeppelin/contracts=lib/openzeppelin-contracts/contracts", "@fhenixprotocol/contracts=node_modules/@fhenixprotocol/contracts"]
+remappings = ["@openzeppelin/contracts=node_modules/@openzeppelin/contracts","@openzeppelin/contracts/latest=lib/openzeppelin-contracts/contracts", "@fhenixprotocol/contracts=node_modules/@fhenixprotocol/contracts", "@hyperlane-xyz/contracts=node_modules/@hyperlane-xyz/core/contracts", "@openzeppelin/contracts-upgradeable=node_modules/@openzeppelin/contracts-upgradeable"]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
