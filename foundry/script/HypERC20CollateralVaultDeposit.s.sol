@@ -5,6 +5,8 @@ import {Script, console} from "forge-std/Script.sol";
 import {HypERC20CollateralVaultDeposit} from "../src/hyperlane/HypERC20CollateralVaultDeposit.sol";
 import {EncryptedToken} from "../src/EncryptedToken.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IERC4626} from "@openzeppelin/contracts/interfaces/IERC4626.sol";
+import {ERC4626} from "@openzeppelin/contracts/token/ERC20/extensions/ERC4626.sol";
 
 contract HypERC20CollateralVaultDepositScript is Script {
 
@@ -13,7 +15,10 @@ contract HypERC20CollateralVaultDepositScript is Script {
     
     function run() public {
         vm.startBroadcast();
-        HypERC20CollateralVaultDeposit vault = new HypERC20CollateralVaultDeposit(VAULT_ADDRESS, MAILBOX_ADDRESS);
+
+        ERC4626 vault = ERC4626(VAULT_ADDRESS);
+        HypERC20CollateralVaultDeposit hyperlaneVault = new HypERC20CollateralVaultDeposit(vault, MAILBOX_ADDRESS);
+        
         vm.stopBroadcast();
     }
 
