@@ -1,13 +1,14 @@
 "use client";
 import { Input } from "../components/ui/input";
 import { IDKitWidget } from '@worldcoin/idkit';
-import { useState } from 'react'
-import { BigNumber } from 'ethers'
-import { decode } from '../lib/wld'
-import ContractAbi from '../abi/Contract.abi'
+import { useState } from 'react';
+import { BigNumber } from 'ethers';
+import { decode }from '../lib/wld';
+import DexAbi from '../abi/DEX.abi';
+import ContractAbi from '../abi/Contract.abi';
 import { Account } from '../utils/account';
 import { WalletOptions } from '../utils/wallet-options';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useWriteContract, useReadContract } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
 import { motion } from 'framer-motion';
 import {
@@ -27,10 +28,15 @@ import { Label } from "../components/ui/label";
 // function withdrawLiquidity(uint256 poolShares) external returns(uint256 amount0, uint256 amount1);
 
 //deployed addresses
-//
+// Middleman  - 0x2AA9Ea1513b5B3428674AF84BCe8927b73378193
 // Token0     - 0x210dD4B75a71f2b8F565ce814877A7749BEaA38av
 // Token1     - 0x1002A26f4404fa1BDAC9c6AdE24D4B053d960390
 // Mystic DEX - 0xD0559eDB1b35661c207C52AA572d78eEc7677f96
+
+// const wagmiContractConfig = {
+//   addressOrName: '0xD0559eDB1b35661c207C52AA572d78eEc7677f96',
+//   contractInterface: ContractAbi,
+// };
 
 const bounceAnimation = {
   y: ["0%", "-10%", "0%",  "-10%", "0%"], // Bounce movement pattern
@@ -49,13 +55,30 @@ export default function Home() {
   const { address } = useAccount();
   const [proof, setProof] = useState(null);
   const { writeContract } = useWriteContract()
-  const [verified, setVerified] = useState(false);
-  const [displayModal, setDisplayModal] = useState(true);
+  const [verified, setVerified] = useState(true);
+  const [displayModal, setDisplayModal] = useState(false);
+  const [balance, setBalance] = useState(null);
 
   const onSuccess = () => {
     setVerified(true);
   };
 
+  const { data, isError, isLoading } = useReadContract({
+    DexAbi,
+    functionName: 's_liquidity0',
+    args: [''],
+  });
+
+  // Example function to handle reading balance
+  function handleReadContract() {
+    console.log('reading...')
+    console.log(data)
+    if (data) {
+      console.log(data);
+      setBalance(data); // Assuming `data` contains the balance you're interested in
+    }
+  }
+    
   function write() {
     writeContract({ 
     address: process.env.NEXT_PUBLIC_CONTRACT_ADDR,
@@ -158,10 +181,11 @@ export default function Home() {
   <select
     className={`focus:outline-none border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
     disabled={!verified}
+    onChange={handleReadContract}
   >
     <option value="ETH">ETH</option>
     <option value="USDC">USDC</option>
-    <option value="ACHI">ACHI</option>
+    <option value="BTC">BTC</option>
   </select>
 </div>
 
@@ -184,7 +208,7 @@ export default function Home() {
           >
             <option value="BTC">BTC</option>
             <option value="USDC">USDC</option>
-            <option value="ACHI">ACHI</option>
+            <option value="SOL">SOL</option>
           </select>
         </div>
       </div>

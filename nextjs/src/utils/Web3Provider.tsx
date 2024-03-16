@@ -1,17 +1,21 @@
 "use client"
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { base, mainnet } from "wagmi/chains";
+import { fhenix } from "../lib/fhenixChain";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 
 const config = createConfig(
   getDefaultConfig({
     // Your dApps chains
-    chains: [base],
+    chains: [base, fhenix],
     transports: {
       // RPC URL for each chain
       [base.id]: http(
         `${process.env.BASE_RPC}`,
+      ),
+      [fhenix.id]: http(
+        `https://api.testnet.fhenix.zone:7747`,
       ),
     },
 
