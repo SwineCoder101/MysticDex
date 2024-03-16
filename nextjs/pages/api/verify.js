@@ -7,10 +7,9 @@ const verifyRes = await fetch(`https://developer.worldcoin.org/api/v1/verify/app
         "Content-Type": "application/json",
     },
     body: JSON.stringify({...proof, action: "swap"}),
-})  
+})
 const wldResponse = await verifyRes.json();
 if (verifyRes.ok) {
-
     res.status(verifyRes.status).send({
         code: "success",
         detail: "This action verified correctly!",
