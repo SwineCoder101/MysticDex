@@ -25,7 +25,7 @@ const openSans = Open_Sans({
 
 export default function RootLayout({ children }) {
   return (
-    <Web3Provider>
+    <Web3Provider >
         <html lang="en">
           <body
             className={`${openSans.variable} ${robotoMono.variable} font-sans`}
