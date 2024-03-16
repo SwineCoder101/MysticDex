@@ -1,5 +1,9 @@
 ## Mystic DEX
 
+Allow verified humans to perform encrypted trades and retain privacy from any chain.
+
+This was made possible with the integration of Fhenix, Hyperlane and WorldCoin into a single all encompassing solution.
+
 #### Verified Contracts 
 - Fhenix
   - [DEX Contract](https://explorer.testnet.fhenix.zone/address/0x8F1682410E2B5187D28b92280F38eff74868741d?tab=contract)
