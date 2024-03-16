@@ -2,7 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
-import {MysticDexV1} from "../src/MysticDexV1.sol";
+import {MysticDexV1} from "../src/v1/MysticDexV1.sol";
 import {MockERC20} from "./mock/MockERC20.sol";
 
 contract MysticDexV1Test is Test {

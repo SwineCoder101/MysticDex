@@ -5,6 +5,8 @@ import { FHE, inEuint32, euint32, inEbool } from "@fhenixprotocol/contracts/FHE.
 import { IEncryptedDEX } from "./IEncryptedDEX.sol";
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+//contract used to interact with encrypted DEX with unencrypted values
+//completely undermines the FHE, but it is convenient for devnet testing
 contract DexMiddleman {
 
     IEncryptedDEX public dex;
@@ -33,6 +35,6 @@ contract DexMiddleman {
     }
 
     function approveTokens(address tokenAddress, uint256 amount) external {
-        IERC20(tokenAddress).approve(address(dex), amount); //we just want to call approve on encrypted token
+        IERC20(tokenAddress).approve(address(dex), amount);
     }
 }
