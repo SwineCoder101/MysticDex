@@ -1,0 +1,44 @@
+{
+  "fhenix": {
+    "merkleRootMultisigIsmFactory": "0x55A865e5143112bfB5D234597f1511668465542E",
+    "messageIdMultisigIsmFactory": "0x2E3869e93c6fF2b45aBFC2b08B207e3c6f0887FB",
+    "aggregationIsmFactory": "0x6e47c939b927902BD194FB44fFA65Ec805A4C2d1",
+    "aggregationHookFactory": "0xC6577fcb539064b75573CD4aF29d9250d775C954",
+    "routingIsmFactory": "0x049fe8FBb14aDb6F7f662940111596a8C01d68B4",
+    "multisigIsm": "0x8361586934dcedAad4195C9215B3FD457e15fe1F",
+    "basesepolia": {
+      "messageIdMultisigIsm": "0x39Cd9a442010b3038dA3aEeE877668835B4ABF27"
+    },
+    "domainRoutingIsm": "0x8361586934dcedAad4195C9215B3FD457e15fe1F",
+    "proxyAdmin": "0xe63Ce7AAd4BAf8f3c982536711Df42A6CaF7c652",
+    "storageGasOracle": "0x69B8cD17b86ee3dC9FE4ee7297728DC57a3eB409",
+    "interchainGasPaymaster": "0xe46a1B3DA2241f71c0E0bdb7E6b188A27fE8b78F",
+    "merkleTreeHook": "0xA06907339c0b860f5aDdD7Ba8D0AF52e22EA56D0",
+    "aggregationHook": "0x5F6354B69c0be46a9e22c32C1b8a571278EBAEc9",
+    "protocolFee": "0x85eba8E6fF9D558D53094C69C0c4807dddb9D1cE",
+    "mailbox": "0x99BbC3511Aa9347DDc548dA11A773926A3ad4f3F",
+    "validatorAnnounce": "0x989e7e58Fe703F352A52794347BBD59e040e75C2",
+    "testRecipient": "0xf1B17A3D1aFbbbe4dA9578d916Fd0B259642E125"
+  },
+  "basesepolia": {
+    "merkleRootMultisigIsmFactory": "0x55A865e5143112bfB5D234597f1511668465542E",
+    "messageIdMultisigIsmFactory": "0x5A52901e9Cd694b52D33a6f8881cE06c41Db233A",
+    "aggregationIsmFactory": "0x2E3869e93c6fF2b45aBFC2b08B207e3c6f0887FB",
+    "aggregationHookFactory": "0x4da93f978Ee6e821b31eB5655a543286645e1A40",
+    "routingIsmFactory": "0x6e47c939b927902BD194FB44fFA65Ec805A4C2d1",
+    "multisigIsm": "0x35A7fBDaFe719FA10282267dEb109E6B689d1067",
+    "fhenix": {
+      "messageIdMultisigIsm": "0xf69be45eCFc55fD598BB80a0cBA5D3bBAf601569"
+    },
+    "domainRoutingIsm": "0x35A7fBDaFe719FA10282267dEb109E6B689d1067",
+    "proxyAdmin": "0x049fe8FBb14aDb6F7f662940111596a8C01d68B4",
+    "storageGasOracle": "0x056355a5164a7f062dc1Dde9f10F6a0cD7DB3637",
+    "interchainGasPaymaster": "0xe63Ce7AAd4BAf8f3c982536711Df42A6CaF7c652",
+    "merkleTreeHook": "0x1Ea9ec57368E8b10162D3629caCC67278c64469b",
+    "aggregationHook": "0x099eB8297D0e149F30df39Fb6E24c2B36C223FEd",
+    "protocolFee": "0xdDe73206855F767Fa7DaEC2C3eeaEa38b8E6F966",
+    "mailbox": "0xfC334E17466710f0e2f1ab106779863f32ff3B7F",
+    "validatorAnnounce": "0xD0D330BD4703147800ED458D7cdaD91D987319EA",
+    "testRecipient": "0xA06907339c0b860f5aDdD7Ba8D0AF52e22EA56D0"
+  }
+}
