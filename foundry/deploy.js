@@ -1,22 +1,26 @@
 const ethers = require('ethers');
 const MysticDEX = require('./out/MysticDEX.sol/MysticDEX.json');
+const Token = require('./out/EncryptedToken.sol/EncryptedToken.json');
 require('dotenv').config();
+
+const testnet = 'https://api.testnet.fhenix.zone:7747/';
+const local = 'http://localhost:42069';
 
 async function main(){
     const pkey = process.env.PRIVATE_KEY
-    const provider = new ethers.providers.JsonRpcProvider("https://api.testnet.fhenix.zone:7747/");
+    const provider = new ethers.providers.JsonRpcProvider(local);
 
     let signer = new ethers.Wallet(pkey,provider);
-    //const account = wallet.connect(provider);
 
-    const factory = new ethers.ContractFactory(MysticDEX.abi, MysticDEX.bytecode, signer);
+    const tokenFactory = new ethers.ContractFactory(Token.abi, Token.bytecode, signer);
 
-                                              // Token 0 , Token 1 contract addresses
-    const baseContract = await factory.deploy("0x210dD4B75a71f2b8F565ce814877A7749BEaA38a", "0x1002A26f4404fa1BDAC9c6AdE24D4B053d960390");
+    //const dexFactory = new ethers.ContractFactory(MysticDEX.abi, MysticDEX.bytecode, signer);
 
-    const deployedContract = await baseContract.deployed();
+    const token0BaseContract = await tokenFactory.deploy("Token0", "TKN0");
+    const deployedToken0 = await token0BaseContract.deployed();
+    const token0Address = deployedToken0.address;
 
-    console.log(deployedContract.address);
+    console.log(token0Address);
 }
 
 main().catch(console.error);

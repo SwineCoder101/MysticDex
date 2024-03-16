@@ -7,12 +7,6 @@ import { FHE, inEuint32, euint32, inEbool, ebool } from "@fhenixprotocol/contrac
 
 contract MysticDEX is IEncryptedDEX {
 
-    error MysticDex__DepositError();
-    error MysticDex__WithdrawalError();
-    error MysticDex__AmountCannotBeZero();
-    error MysticDex__InsufficientLiquidity();
-    error MysticDex__InsufficientSharePosition();
-
     IFHERC20 public immutable i_token0;
     IFHERC20 public immutable i_token1;
 
@@ -22,6 +16,7 @@ contract MysticDEX is IEncryptedDEX {
     euint32 public s_liquidity0;
     euint32 public s_liquidity1;
 
+    //constants used throughout contract
     euint32 private immutable ZERO;
     euint32 private immutable ONE;
     euint32 private immutable TWO;
@@ -43,6 +38,7 @@ contract MysticDEX is IEncryptedDEX {
         bytes32 userPublicKey
     ) external override returns (euint32) {
 
+        //even if token0 is not being deposited, transfer 0 tokens to contract to obscure the trade direction
         euint32 token0Amount = FHE.select(zeroForOne, sellAmount, ZERO); //bad practice to use 'ZERO' in multiple places without re-encrypting?
         euint32 token1Amount = FHE.select(zeroForOne, ZERO, sellAmount);
         euint32 sellReserve = FHE.select(zeroForOne, s_liquidity0, s_liquidity1);
@@ -64,13 +60,17 @@ contract MysticDEX is IEncryptedDEX {
 
         settleLiquidity(zeroForOne, sellAmount, amountOut);
 
+        //swap token amounts now for withdrawal of bought tokens
+        //even if 0 tokens are withdrawm, still update balance by 0 to obscure trade direction
         i_token0.transferEncrypted(msg.sender, token1Amount);
         i_token1.transferEncrypted(msg.sender, token0Amount);
 
         //re encrypt return value with user pub key, so only user can decrypt with their private key
         return FHE.asEuint32(FHE.sealoutput(amountOut, userPublicKey));
     }
-
+    
+    //max amount of each side user is willing to deposit
+    //pool with calculate the optimal amount of each token to deposit based on 'xy = k' formula
     function addLiquidity(
         euint32 maxAmount0,
         euint32 maxAmount1
