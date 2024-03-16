@@ -1,5 +1,5 @@
 "use client";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { IDKitWidget, VerificationLevel, ISuccessResult } from "@worldcoin/idkit";
 
 // const { address } = useAddress()
@@ -40,8 +40,8 @@ export default function Home() {
       <div className="container text-white text-center pt-20 w-[500px]">
         <div className="flex">
           <IDKitWidget
-            app_id="app_staging_86db89ba718bfb4426194c6e88254a62"
-            action="test"
+            app_id="app_staging_7b0776cc7b74fd86dc87adac4792a7d6"
+            action="swap"
             verification_level={VerificationLevel.Orb}
             handleVerify={handleVerify}
             onSuccess={onSuccess}
@@ -53,7 +53,7 @@ export default function Home() {
           Input Token:
         </p>
         <div className="flex flex-row space-x-2">
-          <Input></Input>
+          {/* <Input></Input> */}
           <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
             <option value="ETH">ETH</option>
             <option value="USDC">USDC</option>
@@ -67,7 +67,7 @@ export default function Home() {
           Output Token:
         </p>
         <div className="flex flex-row space-x-2">
-          <Input></Input>
+          {/* <Input></Input> */}
           <select className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
             <option value="BTC">BTC</option>
             <option value="USDC">USDC</option>
