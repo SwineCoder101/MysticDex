@@ -1,0 +1,10 @@
+fhenix:
+  type: messageIdMultisigIsm
+  threshold: 1
+  validators:
+    - "0xc4d5A5F61CCB9afda2dA4658FCdC159626924726"
+basesepolia:
+  type: messageIdMultisigIsm
+  threshold: 1
+  validators:
+    - "0xc4d5A5F61CCB9afda2dA4658FCdC159626924726"

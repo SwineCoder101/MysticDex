@@ -1,0 +1,10 @@
+{
+  "basesepolia": {
+    "router": "0xe46a1B3DA2241f71c0E0bdb7E6b188A27fE8b78F",
+    "tokenType": "native"
+  },
+  "fhenix": {
+    "router": "0x50BbE5aefC1B50AFf307417D58679fab9A65fb83",
+    "tokenType": "synthetic"
+  }
+}
