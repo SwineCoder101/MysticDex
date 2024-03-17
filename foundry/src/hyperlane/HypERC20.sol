@@ -15,9 +15,12 @@ contract HypERC20 is ERC20Upgradeable, TokenRouter {
     uint8 private immutable _decimals;
     IERC20 private immutable _destinationToken;
 
-    constructor(uint8 __decimals, address _mailbox, address __destinationToken) TokenRouter(_mailbox) {
+    uint256 private _scale = 1;
+
+    constructor(uint8 __decimals, address _mailbox, address __destinationToken, uint256 __scale) TokenRouter(_mailbox) {
         _decimals = __decimals;
         _destinationToken = IERC20(__destinationToken);
+        _scale = __scale;
     }
 
     /**
@@ -63,6 +66,10 @@ contract HypERC20 is ERC20Upgradeable, TokenRouter {
         return bytes(""); // no metadata
     }
 
+    function setScale (uint256 __scale) public {
+        _scale = __scale;
+    }
+
     /**
      * @dev Mints `_amount` of token to `_recipient` balance.
      * @inheritdoc TokenRouter
@@ -72,8 +79,9 @@ contract HypERC20 is ERC20Upgradeable, TokenRouter {
         uint256 _amount,
         bytes calldata // no metadata
     ) internal virtual override {
-        _mint(_recipient, _amount);                         //mint balance to user
-        _destinationToken.transfer(_recipient, _amount);    //transfer other token to user
-        _burn(_recipient, _amount);                         //burn balance from user
+        uint256 _amountToMint = _amount * _scale;
+        _mint(_recipient, _amountToMint);                         //mint balance to user
+        _destinationToken.transfer(_recipient, _amountToMint);    //transfer other token to user
+        _burn(_recipient, _amountToMint);                         //burn balance from user
     }
 }

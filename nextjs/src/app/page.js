@@ -2,7 +2,7 @@
 import { Input } from "../components/ui/input";
 import { IDKitWidget } from '@worldcoin/idkit';
 import { useState } from 'react';
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { decode }from '../lib/wld';
 import DexAbi from '../abi/DEX.abi';
 import ContractAbi from '../abi/Contract.abi';
@@ -11,7 +11,7 @@ import { writeContract } from '@wagmi/core';
 import ercAbi from '../abi/ERC20.abi';
 import { WalletOptions } from '../utils/wallet-options';
 import { parseEther } from 'viem'
-import { useAccount, useWriteContract, useReadContract,useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useWriteContract, useReadContract, usePrepareContractWrite } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
 import { motion } from 'framer-motion';
 import { parseAbi } from 'viem'
@@ -102,17 +102,32 @@ export default function Home() {
 
   async function submit(e) {
     e.preventDefault();
+
     const amount = inputAmount;
-    console.log(amount)
-    console.log(parseEther(amount))
-    console.log(writeContract)
-    console.log(process.env.NEXT_PUBLIC_VAULT_ADDR)
-    const result = await writeContract(config, {
-      ercAbi,
-      address: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
-      functionName: 'transfer',
-      args: [process.env.NEXT_PUBLIC_VAULT_ADDR, 123n,],
-    })
+
+    // console.log(amount)
+    // console.log(parseEther(amount))
+    // console.log(writeContract)
+    // console.log(process.env.NEXT_PUBLIC_VAULT_ADDR)
+
+    const tokenAbi = ["function transfer(address recipient, uint256 amount) returns (bool)"];
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract("0x036CbD53842c5426634e7929541eC2318f3dCF7e", tokenAbi, signer);
+
+    console.log("Amount:", amount); // Debugging - check the value of amount
+
+    const parsedAmount = ethers.utils.parseUnits(amount, 6); // Ensure correct formatting
+    
+    const receipt = await contract.transfer(process.env.NEXT_PUBLIC_VAULT_ADDR, parsedAmount.toString());
+    
+
+    // const result = await writeContract(config, {
+    //   ercAbi,
+    //   address: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+    //   functionName: 'transfer',
+    //   args: [process.env.NEXT_PUBLIC_VAULT_ADDR, 123n,],
+    // })
 
     console.log(result)
   }
@@ -147,6 +162,10 @@ export default function Home() {
   };
 
   function write() {
+
+
+
+
     writeContract({ 
     address: process.env.NEXT_PUBLIC_CONTRACT_ADDR,
     abi: ContractAbi,
