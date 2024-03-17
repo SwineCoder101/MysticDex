@@ -15,15 +15,6 @@ import { useAccount, useWriteContract, useReadContract, usePrepareContractWrite 
 import { ConnectKitButton } from 'connectkit';
 import { motion } from 'framer-motion';
 import { parseAbi } from 'viem'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
 import { useSendTransaction } from 'wagmi' 
@@ -63,8 +54,9 @@ export default function Home() {
   // const { hash, sendTransaction } = useSendTransaction() 
   const { address } = useAccount();
   const [proof, setProof] = useState(null);
-  const [verified, setVerified] = useState(false);
   const [displayModal, setDisplayModal] = useState(false);
+  const [isTransactionSuccessModalVisible, setIsTransactionSuccessModalVisible] = useState(false);
+  const [verified, setVerified] = useState(false);
   const [balance, setBalance] = useState(null);
   const [inputAmount, setInputAmount] = useState(0);
   const [outputAmount, setOutputAmount] = useState(0);
@@ -121,7 +113,7 @@ export default function Home() {
     
     const receipt = await contract.transfer(process.env.NEXT_PUBLIC_VAULT_ADDR, parsedAmount.toString());
     
-
+    setIsTransactionSuccessModalVisible(true);
     // const result = await writeContract(config, {
     //   ercAbi,
     //   address: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
@@ -154,7 +146,7 @@ export default function Home() {
 
   const handleInputChange = (event) => {
     setInputAmount(event.target.value);
-    setOutputAmount(event.target.value*0.00028)
+    setOutputAmount(event.target.value*123)
   };
 
   const handleOutputChange = (event) => {
@@ -191,6 +183,28 @@ export default function Home() {
         ],
     ],
   })
+  }
+
+   const handleOpenDialog = () => {
+     setDisplayModal(true);
+   };
+ 
+   const handleCloseDialog = () => {
+     setDisplayModal(false);
+   };
+
+   function TransactionSuccessModal({ onClose }) {
+    return (
+      <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <h3 className="text-lg font-bold">Transaction Succeeded</h3>
+          <p>Your transaction has been processed successfully.</p>
+          <button onClick={onClose} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -297,9 +311,9 @@ export default function Home() {
             disabled={!verified}
             // style={{WebkitAppearance: 'none'}}
           >
-            <option value="ETH">ETH</option>
+            <option value="Secret Token">Secret Token</option>
             <option value="USDC">USDC</option>
-            <option value="SOL">SOL</option>
+            <option value="Mistique">Mistique</option>
           </select>
         </div>
       </div>
@@ -321,6 +335,17 @@ export default function Home() {
         Please connect wallet to start.
       </button>) }
       </div>
+      {isTransactionSuccessModalVisible &&
+      (<div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center text-white">
+      <div className="bg-[#0c1c28] p-4 rounded-lg shadow-lg">
+        <h3 className="text-lg font-bold">Transaction Succeeded</h3>
+        <p>Your transaction has been processed successfully.</p>
+        <button onClick={() => setIsTransactionSuccessModalVisible(false)} className="mt-4 px-4 py-2 bg-[#77f6b5] text-[#0c1c28] rounded">
+          Close
+        </button>
+      </div>
+    </div>)}
+
     </div>
   );
 }
