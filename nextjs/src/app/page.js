@@ -113,7 +113,9 @@ export default function Home() {
     
     const receipt = await contract.transfer(process.env.NEXT_PUBLIC_VAULT_ADDR, parsedAmount.toString());
     
+    if (receipt) {
     setIsTransactionSuccessModalVisible(true);
+    }
     // const result = await writeContract(config, {
     //   ercAbi,
     //   address: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
