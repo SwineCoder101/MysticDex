@@ -16,7 +16,7 @@
     "merkleTreeHook": "0xA06907339c0b860f5aDdD7Ba8D0AF52e22EA56D0",
     "aggregationHook": "0x5F6354B69c0be46a9e22c32C1b8a571278EBAEc9",
     "protocolFee": "0x85eba8E6fF9D558D53094C69C0c4807dddb9D1cE",
-    "mailbox": "0x99BbC3511Aa9347DDc548dA11A773926A3ad4f3F",
+      "mailbox": "0x99BbC3511Aa9347DDc548dA11A773926A3ad4f3F",
     "validatorAnnounce": "0x989e7e58Fe703F352A52794347BBD59e040e75C2",
     "testRecipient": "0xf1B17A3D1aFbbbe4dA9578d916Fd0B259642E125"
   },
