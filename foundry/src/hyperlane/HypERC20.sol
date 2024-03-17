@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import {TokenRouter} from "./libs/TokenRouter.sol";
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol"; 
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 
 /**
@@ -12,9 +13,11 @@ import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/
  */
 contract HypERC20 is ERC20Upgradeable, TokenRouter {
     uint8 private immutable _decimals;
+    IERC20 private immutable _destinationToken;
 
-    constructor(uint8 __decimals, address _mailbox) TokenRouter(_mailbox) {
+    constructor(uint8 __decimals, address _mailbox, address __destinationToken) TokenRouter(_mailbox) {
         _decimals = __decimals;
+        _destinationToken = IERC20(__destinationToken);
     }
 
     /**
@@ -69,6 +72,8 @@ contract HypERC20 is ERC20Upgradeable, TokenRouter {
         uint256 _amount,
         bytes calldata // no metadata
     ) internal virtual override {
-        _mint(_recipient, _amount);
+        _mint(_recipient, _amount);                         //mint balance to user
+        _destinationToken.transfer(_recipient, _amount);    //transfer other token to user
+        _burn(_recipient, _amount);                         //burn balance from user
     }
 }
