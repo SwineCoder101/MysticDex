@@ -7,10 +7,14 @@ import { decode }from '../lib/wld';
 import DexAbi from '../abi/DEX.abi';
 import ContractAbi from '../abi/Contract.abi';
 import { Account } from '../utils/account';
+import { writeContract } from '@wagmi/core';
+import ercAbi from '../abi/ERC20.abi';
 import { WalletOptions } from '../utils/wallet-options';
-import { useAccount, useWriteContract, useReadContract } from 'wagmi';
+import { parseEther } from 'viem'
+import { useAccount, useWriteContract, useReadContract,useContractWrite, usePrepareContractWrite } from 'wagmi';
 import { ConnectKitButton } from 'connectkit';
 import { motion } from 'framer-motion';
+import { parseAbi } from 'viem'
 import {
   Dialog,
   DialogContent,
@@ -22,6 +26,10 @@ import {
 } from "../components/ui/dialog";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
+import { useSendTransaction } from 'wagmi' 
+import { parseUnits } from 'viem'
+import { config } from "../utils/config";
+
 // From IDEX contract
 // function swap(bool zeroForOne, uint256 amountIn) external returns (uint256 amountOut);
 // function addLiquidity(uint256 maxAmount0, uint256 maxAmount1) external returns(uint256 poolShares);
@@ -52,22 +60,63 @@ const bounceAnimation = {
 };
 
 export default function Home() {
+  // const { hash, sendTransaction } = useSendTransaction() 
   const { address } = useAccount();
   const [proof, setProof] = useState(null);
-  const { writeContract } = useWriteContract()
-  const [verified, setVerified] = useState(true);
+  const [verified, setVerified] = useState(false);
   const [displayModal, setDisplayModal] = useState(false);
   const [balance, setBalance] = useState(null);
+  const [inputAmount, setInputAmount] = useState(0);
+  const [outputAmount, setOutputAmount] = useState(0);
 
   const onSuccess = () => {
     setVerified(true);
   };
 
-  const { data, isError, isLoading } = useReadContract({
-    DexAbi,
-    functionName: 's_liquidity0',
-    args: [''],
-  });
+  // const { data, isError, isLoading } = useReadContract({
+  //   DexAbi,
+  //   functionName: 's_liquidity0',
+  //   args: [''],
+  // });
+
+  // const ercAbi = parseAbi(['function transfer(address,uint256)']);
+
+  // const { config } = usePrepareContractWrite({
+  //   addressOrName: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  //   contractInterface: ercAbi,
+  //   functionName: 'transfer',
+  //   args: [process.env.NEXT_PUBLIC_VAULT_ADDR, parseEther(inputAmount, 18)],
+  // });
+
+  // Use the contract write hook
+  // const { write: sendToken, isLoading, isSuccess, error } = useContractWrite(config);
+  
+  // async function submit(e) {
+  //   e.preventDefault();
+  //   const to = '0x5A80307Eb58Ab20530be96bB882146A327ec7251';
+  //   const value = inputAmount;
+  //   console.log(to);
+  //   console.log(inputAmount);
+
+  // }
+
+  async function submit(e) {
+    e.preventDefault();
+    const amount = inputAmount;
+    console.log(amount)
+    console.log(parseEther(amount))
+    console.log(writeContract)
+    console.log(process.env.NEXT_PUBLIC_VAULT_ADDR)
+    const result = await writeContract(config, {
+      ercAbi,
+      address: '0x036CbD53842c5426634e7929541eC2318f3dCF7e',
+      functionName: 'transfer',
+      args: [process.env.NEXT_PUBLIC_VAULT_ADDR, 123n,],
+    })
+
+    console.log(result)
+  }
+   
 
   // Example function to handle reading balance
   function handleReadContract() {
@@ -79,6 +128,24 @@ export default function Home() {
     }
   }
     
+  // function deposit() {
+  //   writeContract({ 
+  //     address: process.env.NEXT_PUBLIC_VAULT_ADDR,
+  //     abi:,
+  //     functionName: 'verifyAndExecute',
+  //     args: [],
+  //   })
+  // }
+
+  const handleInputChange = (event) => {
+    setInputAmount(event.target.value);
+    setOutputAmount(event.target.value*0.00028)
+  };
+
+  const handleOutputChange = (event) => {
+    setOutputAmount(event.target.value);
+  };
+
   function write() {
     writeContract({ 
     address: process.env.NEXT_PUBLIC_CONTRACT_ADDR,
@@ -116,7 +183,7 @@ export default function Home() {
 				proof ? (<></>) : ( <div className="hidden md:flex border-b border-[#232d3c]">
         <div className="container text-white flex flex-row items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
           <div className="flex flex-row space-x-2">
-            <h2 className="text-3xl text-gray-200 tracking-wide">mysticDEX</h2>
+            <h2 className="text-3xl text-gray-200 tracking-tighter font-medium">mysticDEX</h2>
             
           </div>
           <div>
@@ -126,7 +193,7 @@ export default function Home() {
       </div>) ):  <div className="hidden md:flex border-b border-[#232d3c]">
         <div className="container text-white flex flex-row items-start justify-center space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16 ">
           <div className="flex flex-row space-x-2">
-            <h2 className="text-3xl text-gray-200 tracking-wide">mysticDEX</h2>
+            <h2 className="text-3xl text-gray-200 tracking-tighter font-medium">mysticDEX</h2>
             
           </div>
         </div>
@@ -177,14 +244,17 @@ export default function Home() {
     placeholder="Your value here"
     type="number"
     disabled={!verified}
+    value={inputAmount}
+    onChange={handleInputChange}
   />
   <select
     className={`focus:outline-none border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
     disabled={!verified}
     onChange={handleReadContract}
+    // style={{WebkitAppearance: 'none'}}
   >
-    <option value="ETH">ETH</option>
     <option value="USDC">USDC</option>
+    <option value="ETH">ETH</option>
     <option value="BTC">BTC</option>
   </select>
 </div>
@@ -201,12 +271,14 @@ export default function Home() {
           placeholder="Output value"
           type="number"
           disabled={true}
+          value={outputAmount}
         />
           <select
             className={`focus:outline-none border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-2 tracking-tight font-medium absolute right-0 top-0 h-full ${verified ? 'hover:bg-[#1e2831]' : ''}`}
             disabled={!verified}
+            // style={{WebkitAppearance: 'none'}}
           >
-            <option value="BTC">BTC</option>
+            <option value="ETH">ETH</option>
             <option value="USDC">USDC</option>
             <option value="SOL">SOL</option>
           </select>
@@ -214,12 +286,14 @@ export default function Home() {
       </div>
       <div className="container text-white text-center pt-12 w-[500px]">
         
-       {address != null && verified === true && (<p className="text-sm">Slippage: <i>Please input a token value.</i></p>) }
+       {address != null && verified === true && outputAmount === 0 && (<p className="text-sm">Slippage: <i>Please input a token value.</i></p>) }
+       {address != null && verified === true && outputAmount !== 0 && (<p className="text-sm">Slippage: 3%</p>) }
        {address != null ? verified === true ?
         (<motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="border text-md border-[#1c2836] text-[21px] bg-[#77f6b5] text-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium">
+          className="border text-md border-[#1c2836] text-[21px] bg-[#77f6b5] text-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium"
+          onClick={submit}>
           SWAP
         </motion.button>) : (<button disabled className="border text-md border-[#1c2836] bg-[#0c1c28] py-2 px-14 mt-8 tracking-tight font-medium">
           Please verify with world id to swap.
